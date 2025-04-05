@@ -8,7 +8,6 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
-    <!-- Add in head section -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
@@ -78,117 +77,119 @@
 
     <div id="alertContainer" class="container mt-3"></div>
     {% block content %} {% endblock %}
-    <footer class="text-center mt-5 py-3 border-top">
-        <p class="mb-0">&copy; 2024 ExpMa. All rights reserved.</p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='fontawesome.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='all.min.js') }}"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Instanzio gli elementi del DOM che mi servono
-            let dropArea = $('#dropArea');
-            let fileInput = $('#fileInput');
-            let uploadBtn = $('#uploadBtn');
-            let progressBar = $('.progress-bar');
-            let progressContainer = $('.progress');
+</body>
+<footer class="text-center mt-5 py-3 border-top">
+    <p class="mb-0">&copy; 2024 ExpMa. All rights reserved.</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='fontawesome.min.js') }}"></script>
+<script src="{{ url_for('static', filename='all.min.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Instanzio gli elementi del DOM che mi servono
+        let dropArea = $('#dropArea');
+        let fileInput = $('#fileInput');
+        let uploadBtn = $('#uploadBtn');
+        let progressBar = $('.progress-bar');
+        let progressContainer = $('.progress');
 
-            // Aggiungo gli eventi per il drag and drop
-            dropArea.on('dragover', function (e) {
-                e.preventDefault();
-                // Aggiungo una classe per evidenziare l'area di drop
-                dropArea.addClass('bg-light');
-            });
+        // Aggiungo gli eventi per il drag and drop
+        dropArea.on('dragover', function (e) {
+            e.preventDefault();
+            // Aggiungo una classe per evidenziare l'area di drop
+            dropArea.addClass('bg-light');
+        });
 
-            dropArea.on('dragleave', function (e) {
-                // Rimuovo la classe per evidenziare l'area di drop
-                dropArea.removeClass('bg-light');
-            });
+        dropArea.on('dragleave', function (e) {
+            // Rimuovo la classe per evidenziare l'area di drop
+            dropArea.removeClass('bg-light');
+        });
 
-            dropArea.on('drop', function (e) {
-                e.preventDefault();
-                dropArea.removeClass('bg-light');
-                let files = e.originalEvent.dataTransfer.files;
-                fileInput[0].files = files;
-                uploadFile(files[0]);
-            });
+        dropArea.on('drop', function (e) {
+            e.preventDefault();
+            dropArea.removeClass('bg-light');
+            let files = e.originalEvent.dataTransfer.files;
+            fileInput[0].files = files;
+            uploadFile(files[0]);
+        });
 
-            uploadBtn.click(function () {
-                fileInput.click();
-            });
+        uploadBtn.click(function () {
+            fileInput.click();
+        });
 
-            fileInput.change(function () {
-                if (this.files.length > 0) {
-                    uploadFile(this.files[0]);
-                }
-            });
-
-            function uploadFile(file) {
-                let formData = new FormData();
-                formData.append('file', file);
-                progressContainer.removeClass('hidden');
-                progressBar.css('width', '0%');
-
-                axios.post('/utils/upload', formData, {
-                    onUploadProgress: progressEvent => {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        progressBar.css('width', percentCompleted + '%');
-                    }
-                })
-                    .then(response => {
-                        console.log('Upload complete:', response.data);
-                        progressBar.css('width', '100%');
-                        showAlert('success', 'File uploaded successfully');
-
-                        setTimeout(() => {
-                            progressContainer.addClass('hidden');
-                            progressBar.css('width', '0%');
-                        }, 1500);
-                    })
-                    .catch(error => {
-                        console.error('Upload failed:', error.error);
-                        progressContainer.addClass('hidden');
-                        showAlert('danger', 'File upload failed');
-                    });
+        fileInput.change(function () {
+            if (this.files.length > 0) {
+                uploadFile(this.files[0]);
             }
+        });
 
-            // Add helper function to show alerts
-            function showAlert(type, message) {
-                const alertHtml = `
+        function uploadFile(file) {
+            let formData = new FormData();
+            formData.append('file', file);
+            progressContainer.removeClass('hidden');
+            progressBar.css('width', '0%');
+
+            axios.post('/utils/upload', formData, {
+                onUploadProgress: progressEvent => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    progressBar.css('width', percentCompleted + '%');
+                }
+            })
+                .then(response => {
+                    console.log('Upload complete:', response.data);
+                    progressBar.css('width', '100%');
+                    showAlert('success', 'File uploaded successfully');
+
+                    setTimeout(() => {
+                        progressContainer.addClass('hidden');
+                        progressBar.css('width', '0%');
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Upload failed:', error.error);
+                    progressContainer.addClass('hidden');
+                    showAlert('danger', 'File upload failed');
+                });
+        }
+
+        // Add helper function to show alerts
+        function showAlert(type, message) {
+            const alertHtml = `
                     <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                         ${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                $('#alertContainer').html(alertHtml);
+            $('#alertContainer').html(alertHtml);
 
-                // Auto-dismiss after 5 seconds
-                setTimeout(() => {
-                    $('.alert').alert('close');
-                }, 5000);
-            }
-            function handleFileUpload(file_data) {
-                $.ajax({
-                    url: '/process-file',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: file_data,
-                    success: function (response) {
-                        console.log('Elaborazione completata:', response);
-                    },
-                    error: function () {
-                        alert('Errore nell’elaborazione del file');
-                    }
-                });
-            }
-        });
-    </script>
-</body>
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+        function handleFileUpload(file_data) {
+            $.ajax({
+                url: '/process-file',
+                type: 'POST',
+                contentType: 'application/json',
+                data: file_data,
+                success: function (response) {
+                    console.log('Elaborazione completata:', response);
+                },
+                error: function () {
+                    alert('Errore nell’elaborazione del file');
+                }
+            });
+        }
+    });
+</script>
+
 
 </html>
+
 
 <style>
     body {

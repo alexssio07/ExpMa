@@ -20,7 +20,7 @@ def create_app():
     Returns:
         app (Flask): Oggetto app della web application
     """
-    app = Flask(__name__)
+    app = Flask(__name__)  # Creo l'oggetto app della web application
     app.config.from_object(
         Config
     )  # Aggiungo il file di configurazione dell'applicazione al collegamento al database
@@ -35,7 +35,7 @@ def create_app():
         "main.login"  # Redirect alla pagina di login se non autenticato
     )
 
-    # Registra i Blueprint
+    # Registro i Blueprint per le rotte principali e per le rotte dell'API
     app.register_blueprint(routes_bp)
     app.register_blueprint(utils_bp, url_prefix="/utils")
     app.register_blueprint(auth_bp, url_prefix="/auth")
