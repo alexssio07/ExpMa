@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+{% if username %}
+<div class="container mt-5">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="upload-box" id="dropArea">
+            <input type="file" id="fileInput" class="hidden" name="file">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png" width="50" alt="Upload Icon">
+            <p class="mt-3">Drop your files here<br>or click to browse</p>
+            <button type="button" class="btn btn-dark" id="uploadBtn">Upload Files</button>
+            <p class="text-muted mt-2">Tipi di file supportati da banche: Hype, ecc...</p>
+    </form>
+</div>
+<div class="progress hidden mt-3">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+</div>
+</div>
+{% endif %}
+{% endblock %}

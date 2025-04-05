@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary bg-gradient text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Dettaglio spese</h4>
+            <div>
+                <button class="btn btn-light btn-sm" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Aggiorna
+                </button>
+                <button class="btn btn-light btn-sm ms-2" id="exportBtn">
+                    <i class="fas fa-download"></i> Esporta
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container">
+                <div class="justify-content-between">
+                    <div class="d-flex justify-content-start">
+                        <label class="form-label">Data operazione</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" id="dateFrom" name="dateFrom">
+                            <span class="input-group-text">a</span>
+                            <input type="date" class="form-control" id="dateTo" name="dateTo">
+                        </div>
+                    </div>
+                    <div class="justify-content-between">
+                        <label class="form-label">Tipo operazione</label>
+                        <select class="form-select" id="tipoOperazione">
+                            <option value="">Tutti</option>
+                            <option value="Accredito">Accredito</option>
+                            <option value="Addebito">Addebito</option>
+                        </select>
+                    </div>
+                    <div class="justify-content-between">
+                        <label class="form-label">Dettaglio</label>
+                        <input type="text" class="form-control" id="dettaglio" placeholder="Cerca...">
+                    </div>
+                    <div class="justify-content-between">
+                        <label class="form-label">Importo</label>
+                        <div class="input-group">
+                            <select class="form-select" id="importoOperatore" style="max-width: 80px;">
+                                <option value="=">=</option>
+                                <option value="<">
+                                    < </option>
+                                <option value=">">></option>
+                            </select>
+                            <input type="number" class="form-control" id="importoValore" step="0.01">
+                            <button class="btn btn-primary" id="applyFilters">
+                                <i class="fas fa-filter"></i> Filtra
+                            </button>
+                            <button class="btn btn-secondary" id="resetFilters">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="text-center">#</th>
+                            <th scope="col">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Data operazione
+                            </th>
+                            <th scope="col">
+                                <i class="fas fa-tag me-1"></i>
+                                Tipo di operazione
+                            </th>
+                            <th scope="col">
+                                <i class="fas fa-file-invoice me-1"></i>
+                                Dettaglio
+                            </th>
+                            <th scope="col" class="text-end">
+                                <i class="fas fa-euro-sign me-1"></i>
+                                Importo
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for spesa in spese %}
+                        <tr>
+                            <td class="text-center">{{ loop.index }}</td>
+                            <td>{{ spesa.data_operazione.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <span
+                                    class="badge rounded-pill bg-secondary {% if spesa.tipologia_pagamento == 'Accredito' %}color-accredito{% else %}color-addebito{% endif %}">
+                                    {{ spesa.tipologia_pagamento }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ spesa.nome }}</span>
+                                    <small class="text-muted">{{ spesa.descrizione }}</small>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <span
+                                    class="fw-bold {% if spesa.tipologia_pagamento == 'Accredito' %}text-color-accredito{% else %}text-color-addebito{% endif %}">
+                                    € {{ spesa.importo }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% if pagination.pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="{{ url_for('main.dashboard', page=pagination.prev_num) if pagination.has_prev else '#' }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+
+                {% for page in pagination.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+                {% if page %}
+                <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('main.dashboard', page=page) }}">{{ page }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link"
+                        href="{{ url_for('main.dashboard', page=pagination.next_num) if pagination.has_next else '#' }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+<div class="card-footer text-muted">
+    <div class="d-flex justify-content-around align-items-center">
+        <span>
+            Showing {{ pagination.items|length }} of {{ pagination.total }} entries
+            (Page {{ pagination.page }} of {{ pagination.pages }})
+        </span>
+        <div>
+            <span class="me-3">
+                <i class="fas fa-arrow-up text-success"></i> Income: € {{ total_income }}
+            </span>
+            <span>
+                <i class="fas fa-arrow-down text-danger"></i> Expenses: € {{ -total_expenses }}
+            </span>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .color-addebito {
+        background-color: red !important;
+    }
+
+    .color-accredito {
+        background-color: green !important;
+    }
+
+    .text-color-accredito {
+        color: green !important;
+    }
+
+    .text-color-addebito {
+        color: red !important;
+    }
+
+    .table th {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 1em;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    .table-responsive {
+        border-radius: 5px;
+    }
+
+    /* .pagination .page-link {
+        color: var(--bs-primary);
+        padding: 0.5rem 0.75rem;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+
+    .pagination .page-link:focus {
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    } */
+</style>
+{% endblock %}

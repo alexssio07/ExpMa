@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+<div class="p-4">
+    <h2 class="text-center mb-4">Registrazione</h2>
+    <form method="POST" action="{{ url_for('auth.register') }}">
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Registrati</button>
+    </form>
+    <p class="text-center mt-3">Hai già un account? <a href="{{ url_for('main.login') }}">Accedi</a></p>
+</div>
+{% endblock %}
